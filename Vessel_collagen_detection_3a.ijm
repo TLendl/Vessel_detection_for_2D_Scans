@@ -1,7 +1,4 @@
 
-//Test changes in the original file
-//Test
-//Test Test Test
 
 inDir = getDirectory("Choose Directory Containing Files ");
 
@@ -18,7 +15,6 @@ Exclude=300;
 
 numb=0;
 
-if(Threshset==1){
 
 //Exclude non image files//
 
@@ -66,7 +62,6 @@ for (i=0; i<fileList.length; i++) {
 //exit	
 
 	//Split Channels and perform Filtering//
-		//run("Gaussian Blur 3D...", "x="+xyBlur+" y="+xyBlur+" z="+zBlur+"");
 		roiManager("reset");
 		roiManager("Show All");
 		//run("Subtract Background...", "rolling=50 stack");
@@ -77,30 +72,14 @@ for (i=0; i<fileList.length; i++) {
 	//Mark Regions that should be removed	
 		selectWindow(Namelong);
  		waitForUser("Please mark regions to remove, add them to the ROI Manager pressing \"t\", then click OK.");
- 		//Create Dialog for selection of manual counting
-		//Exclude=roiManager("count");
-		//print(Exclude);
-		
-/*		if(Exclude>0){
-		roiManager("Save", inDir+"RoiSet_Exclusion.zip");
-		}
-*/
 
-/*	if(Exclude>0){
- 			for(e=0; e<Exclude; e++){
- 			roiManager("select", e);
- 			run("Clear", "stack");	
- 			}
- 		}
-*/
-
+  //Switch to batch mode
   		setBatchMode("hide");
   		setBatchMode(true);
-  //		roiManager("reset");
+
+  //Split the two channels		
 		run("Split Channels");
 		
-
-
 	//Create Mask for Border exclusion
 		selectWindow("C3-"+Namelong);
 		run("Auto Local Threshold", "method=Phansalkar radius=15 parameter_1=0 parameter_2=0 white");
@@ -166,7 +145,6 @@ for (i=0; i<fileList.length; i++) {
 
 	//exit
 		//close("Mask_inner");
-		//close("Mask_outer");
 		selectWindow("Mask_total");
 		run("Divide...", "value=255");
 		run("Clear Results");
@@ -190,6 +168,7 @@ for (i=0; i<fileList.length; i++) {
 
 		roiManager("reset");
 		//exit
+		
 	//Filter Channel2//
 		selectWindow("C2-"+Namelong);
 		CH2=getImageID();
@@ -245,9 +224,6 @@ for (i=0; i<fileList.length; i++) {
 	//Filter Channel1//	
 		selectWindow("C1-"+Namelong);
 		CH1=getImageID();
-		//setSlice(slices/2);
-		//resetMinAndMax();
-		//run("FeatureJ Laplacian", "compute smoothing=2");
 		run("Bandpass Filter...", "filter_large=20 filter_small=4 suppress=None tolerance=5 autoscale");
 		rename("Filtered_CH1");
 		//exit
@@ -312,7 +288,6 @@ for (i=0; i<fileList.length; i++) {
 
 
 	//Measure Overlap
-
 		imageCalculator("AND create", "Mask_CH1","Mask_CH2");
 		rename("Overlap");
 		//run("Create Selection");
@@ -385,7 +360,7 @@ for (i=0; i<fileList.length; i++) {
 		selectWindow("Mask_CH1_inner");
 		run("Set Measurements...", "area integrated limit display redirect=Overlap_in_Ch1_inner decimal=2");
 		run("Analyze Particles...", "size=0-Infinity display add");
-
+//exit
 		selectWindow("Overlap_in_Ch1_inner");
 		rename("Overlap_in_Ch2_inner");
 		roiManager("Reset");
@@ -396,7 +371,7 @@ for (i=0; i<fileList.length; i++) {
 		selectWindow("Overlap_in_Ch2_inner");
 		rename("Overlap_in_Ch1_outer");
 		roiManager("Reset");
-		selectWindow("Mask_CH2_outer");
+		selectWindow("Mask_CH1_outer");
 		run("Set Measurements...", "area integrated limit display redirect=Overlap_in_Ch1_outer decimal=2");
 		run("Analyze Particles...", "size=0-Infinity display add");
 
@@ -433,5 +408,5 @@ saveAs("Results", inDir+"Thresholds.xls");
 run("Close");
 //run("Clear Results");
 
-}
+
 else{};
