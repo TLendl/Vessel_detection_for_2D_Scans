@@ -1,7 +1,5 @@
+///Test for GitHub
 
-//Test changes in the original file
-//Test
-//Test Test Test
 
 inDir = getDirectory("Choose Directory Containing Files ");
 
