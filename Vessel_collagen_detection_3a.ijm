@@ -402,11 +402,3 @@ for (i=0; i<fileList.length; i++) {
 }
 
 setBatchMode(false);
-exit
-selectWindow("Results");
-saveAs("Results", inDir+"Thresholds.xls");	
-run("Close");
-//run("Clear Results");
-
-
-else{};
