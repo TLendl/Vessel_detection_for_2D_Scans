@@ -10,12 +10,12 @@ run("Close All", "");
 run("Clear Results");
 roiManager("reset");
 
-//Set size Value for Exclusion of small particles
+//Set size Value for Exclusion of small particles 
+//in um^2
 Exclude=300;
 
-numb=0;
 
-
+numb=0;
 //Exclude non image files//
 
 for (i=0; i<fileList.length; i++) {
@@ -73,11 +73,11 @@ for (i=0; i<fileList.length; i++) {
 		selectWindow(Namelong);
  		waitForUser("Please mark regions to remove, add them to the ROI Manager pressing \"t\", then click OK.");
 
-  //Switch to batch mode
-  		setBatchMode("hide");
-  		setBatchMode(true);
+	//Switch to batch mode
+  	//	setBatchMode("hide");
+  	//	setBatchMode(true);
 
-  //Split the two channels		
+	//Split the two channels		
 		run("Split Channels");
 		
 	//Create Mask for Border exclusion
@@ -143,8 +143,8 @@ for (i=0; i<fileList.length; i++) {
 		roiManager("Add");
 		imageCalculator("AND", "Mask_total","Mask_Holes");
 
-	//exit
-		//close("Mask_inner");
+//exit
+	//close("Mask_inner");
 		selectWindow("Mask_total");
 		run("Divide...", "value=255");
 		run("Clear Results");
@@ -188,7 +188,7 @@ for (i=0; i<fileList.length; i++) {
 		//roiManager("reset");
 //exit
 
-//Exclude small Objects
+	//Exclude small Objects
 		setOption("BlackBackground", true);
 		run("Analyze Particles...", "size="+Exclude+"-Infinity add");
 		//exit
@@ -234,7 +234,7 @@ for (i=0; i<fileList.length; i++) {
 		//waitForUser("Set manual Threshold");
 
 
-//Exclude small Objects
+	//Exclude small Objects
 		setOption("BlackBackground", true);
 		run("Analyze Particles...", "size="+Exclude+"-Infinity add");
 		Nmbr=roiManager("count");
@@ -295,7 +295,7 @@ for (i=0; i<fileList.length; i++) {
 		setAutoThreshold("Triangle dark stack");
 		run("Measure");
 //exit
-//Measure Inner Region
+	//Measure Inner Region
 		selectWindow("Mask_CH1");
 		run("Duplicate...", " ");
 		rename("Mask_CH1_inner");
@@ -324,7 +324,7 @@ for (i=0; i<fileList.length; i++) {
 		//close("Overlap_inner"); 
 
 
-//Measure Outer Region
+	//Measure Outer Region
 		selectWindow("Mask_CH1");
 		run("Duplicate...", " ");
 		rename("Mask_CH1_outer");
@@ -351,8 +351,12 @@ for (i=0; i<fileList.length; i++) {
 		setAutoThreshold("Triangle dark stack");
 		run("Measure");
 		//close("Overlap_outer");
+
+		saveAs("Results", file+"Areas.xls");
+		run("Clear Results");
+
 //exit
-//Measure single Objects in Ch1
+	//Measure single Objects in Ch1
 		selectWindow("Overlap");
 		run("Divide...", "value=255");
 		rename("Overlap_in_Ch1_inner");
@@ -361,32 +365,48 @@ for (i=0; i<fileList.length; i++) {
 		run("Set Measurements...", "area integrated limit display redirect=Overlap_in_Ch1_inner decimal=2");
 		run("Analyze Particles...", "size=0-Infinity display add");
 //exit
+		wait(50);
 		selectWindow("Overlap_in_Ch1_inner");
+		rename("Overlap_in_Ch1_outer");
+		//roiManager("Reset");
+		selectWindow("Mask_CH1_outer");
+		run("Set Measurements...", "area integrated limit display redirect=Overlap_in_Ch1_outer decimal=2");
+		run("Analyze Particles...", "size=0-Infinity display add");
+
+	//Save Object ROIs and Results in Ch1
+	//	selectWindow("Overlap_in_Ch1_outer");
+	//	roiManager("Show All");
+		run("Enhance Contrast", "saturated=0.35");
+		roiManager("Save", file+"ROIs_Overlap_CH1.zip");
+		saveAs("Results", file+"Areas_Objects_inCH1.xls");
+		run("Clear Results");
+
+		wait(50);
+		selectWindow("Overlap_in_Ch1_outer");
 		rename("Overlap_in_Ch2_inner");
 		roiManager("Reset");
 		selectWindow("Mask_CH2_inner");
 		run("Set Measurements...", "area centroid integrated limit display redirect=Overlap_in_Ch2_inner decimal=2");
 		run("Analyze Particles...", "size=0-Infinity display add");
-
+		
+		wait(50);
 		selectWindow("Overlap_in_Ch2_inner");
-		rename("Overlap_in_Ch1_outer");
-		roiManager("Reset");
-		selectWindow("Mask_CH1_outer");
-		run("Set Measurements...", "area integrated limit display redirect=Overlap_in_Ch1_outer decimal=2");
-		run("Analyze Particles...", "size=0-Infinity display add");
-
-		selectWindow("Overlap_in_Ch1_outer");
 		rename("Overlap_in_Ch2_outer");
-		roiManager("Reset");
+		//roiManager("Reset");
 		selectWindow("Mask_CH2_outer");
 		run("Set Measurements...", "area integrated limit display redirect=Overlap_in_Ch2_outer decimal=2");
-		run("Analyze Particles...", "size=0-Infinity display add");
+		run("Analyze Particles...", "size=0-Infinity display add");		
+		
+		wait(50);
+	//Save Object ROIs and Results in Ch2		
+		roiManager("Save", file+"ROIs_Overlap_CH2.zip");		
+		saveAs("Results", file+"Areas_Objects_inCH2.xls");
 //exit
 
-//Save Results		
-		selectWindow("Results");
+	//Save Results		
+		//selectWindow("Results");
 		//exit
-		saveAs("Results", file+"Areas.xls");
+	//	saveAs("Results", file+"Areas_Objects.xls");
 		run("Clear Results");	
 		roiManager("Reset");
 
