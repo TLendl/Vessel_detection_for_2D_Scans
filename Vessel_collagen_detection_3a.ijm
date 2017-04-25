@@ -74,8 +74,8 @@ for (i=0; i<fileList.length; i++) {
  		waitForUser("Please mark regions to remove, add them to the ROI Manager pressing \"t\", then click OK.");
 
 	//Switch to batch mode
-  	//	setBatchMode("hide");
-  	//	setBatchMode(true);
+  		setBatchMode("hide");
+  		setBatchMode(true);
 
 	//Split the two channels		
 		run("Split Channels");
@@ -169,6 +169,54 @@ for (i=0; i<fileList.length; i++) {
 		roiManager("reset");
 		//exit
 		
+
+		
+//exit
+		
+	//Filter Channel1//	
+		selectWindow("C1-"+Namelong);
+		CH1=getImageID();
+		run("Bandpass Filter...", "filter_large=20 filter_small=4 suppress=None tolerance=5 autoscale");
+		rename("Filtered_CH1");
+		//exit
+		//run("16-bit");
+		resetMinAndMax();
+		//run("Invert", "stack");
+		setAutoThreshold("Triangle dark stack");
+		//waitForUser("Set manual Threshold");
+
+
+	//Exclude small Objects
+		setOption("BlackBackground", true);
+		run("Analyze Particles...", "size="+Exclude+"-Infinity add");
+		Nmbr=roiManager("count");
+		N=Array.getSequence(Nmbr);
+		Array.print(N);
+		roiManager("select", 1);
+		//exit
+		run("Clear Outside");
+				//exit
+ 		if(Nmbr>0){
+ 			for(e=0; e<Nmbr; e++){
+ 			roiManager("select", e);
+ 			run("Fill", "slice");	
+ 			}
+ 		}
+		roiManager("reset");
+		run("Select None");
+		//exit
+		imageCalculator("Multiply create", "Filtered_CH1", "Mask_total");
+		rename("Mask_CH1");
+		//run("Create Selection");
+		//roiManager("Add");
+		setAutoThreshold("Triangle dark stack");
+	
+		run("Measure");
+		resetThreshold();
+		close("Filtered_CH1");
+		print("numb = "+numb);
+		numb=numb+1;
+
 	//Filter Channel2//
 		selectWindow("C2-"+Namelong);
 		CH2=getImageID();
@@ -218,52 +266,6 @@ for (i=0; i<fileList.length; i++) {
 		resetThreshold();
 		close("Filtered_CH2");
 		//run("Convert to Mask");
-		
-	//exit
-		
-	//Filter Channel1//	
-		selectWindow("C1-"+Namelong);
-		CH1=getImageID();
-		run("Bandpass Filter...", "filter_large=20 filter_small=4 suppress=None tolerance=5 autoscale");
-		rename("Filtered_CH1");
-		//exit
-		//run("16-bit");
-		resetMinAndMax();
-		//run("Invert", "stack");
-		setAutoThreshold("Triangle dark stack");
-		//waitForUser("Set manual Threshold");
-
-
-	//Exclude small Objects
-		setOption("BlackBackground", true);
-		run("Analyze Particles...", "size="+Exclude+"-Infinity add");
-		Nmbr=roiManager("count");
-		N=Array.getSequence(Nmbr);
-		Array.print(N);
-		roiManager("select", 1);
-		//exit
-		run("Clear Outside");
-				//exit
- 		if(Nmbr>0){
- 			for(e=0; e<Nmbr; e++){
- 			roiManager("select", e);
- 			run("Fill", "slice");	
- 			}
- 		}
-		roiManager("reset");
-		run("Select None");
-		//exit
-		imageCalculator("Multiply create", "Filtered_CH1", "Mask_total");
-		rename("Mask_CH1");
-		//run("Create Selection");
-		//roiManager("Add");
-		setAutoThreshold("Triangle dark stack");
-	
-		run("Measure");
-		resetThreshold();
-		close("Filtered_CH1");
-		print("numb = "+numb);
-		numb=numb+1;
 
 
 	//Restore ROIs of Masks
@@ -351,7 +353,7 @@ for (i=0; i<fileList.length; i++) {
 		setAutoThreshold("Triangle dark stack");
 		run("Measure");
 		//close("Overlap_outer");
-
+//exit
 		saveAs("Results", file+"Areas.xls");
 		run("Clear Results");
 
@@ -386,7 +388,7 @@ for (i=0; i<fileList.length; i++) {
 		rename("Overlap_in_Ch2_inner");
 		roiManager("Reset");
 		selectWindow("Mask_CH2_inner");
-		run("Set Measurements...", "area centroid integrated limit display redirect=Overlap_in_Ch2_inner decimal=2");
+		run("Set Measurements...", "area integrated limit display redirect=Overlap_in_Ch2_inner decimal=2");
 		run("Analyze Particles...", "size=0-Infinity display add");
 		
 		wait(50);
